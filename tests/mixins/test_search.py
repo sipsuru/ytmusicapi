@@ -113,6 +113,13 @@ class TestSearch:
         assert len(results) >= 3
         assert all(item["resultType"] == "episode" for item in results)
 
+    def test_search_playlist_return_correct_item_count(self, yt: YTMusic):
+        results = yt.search(query="Best Phonk music", filter="community_playlists")
+        assert all(item["itemCount"] is None for item in results)
+
+        results = yt.search(query="Best Phonk music", filter="featured_playlists")
+        assert all((item["itemCount"] is not None and isinstance(item["itemCount"], int)) for item in results)
+
     def test_search_episode_category(self, yt_auth):
         """Test resultType detection for episodes by searching for a podcast without a filter.
         Note 2025/10/20: categories are currently gone from default search, therefore category changed to None
