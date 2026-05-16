@@ -3,6 +3,7 @@ from typing import Literal
 from ytmusicapi.continuations import get_continuations
 from ytmusicapi.exceptions import YTMusicUserError
 from ytmusicapi.mixins._protocol import MixinProtocol
+from ytmusicapi.navigation import MRLIR
 from ytmusicapi.parsers.search import *
 from ytmusicapi.type_alias import JsonList, ParseFuncType, RequestFuncType
 
@@ -256,6 +257,33 @@ class SearchMixin(MixinProtocol):
                 if internal_filter and not scope == scopes[1]:
                     result_type = internal_filter[:-1].lower()
 
+            elif "itemSectionRenderer" in res:
+                # TODO: This was done hastily so may not be 100% correct
+                # but it is currently passing all search tests it seems.
+                # investigate the parsing logic for this and make sure its correct
+                shelf_contents = res["itemSectionRenderer"]["contents"]
+
+                is_did_you_mean_section = nav(shelf_contents, [0, "didYouMeanRenderer"], True)
+
+                if is_did_you_mean_section is not None:
+                    continue
+
+                category = nav(
+                    shelf_contents,
+                    [
+                        0,
+                        MRLIR,
+                        "flexColumns",
+                        1,
+                        "musicResponsiveListItemFlexColumnRenderer",
+                        "text",
+                        "runs",
+                        0,
+                    ],
+                )
+
+                if internal_filter and not scope == scopes[1]:
+                    result_type = internal_filter[:-1].lower()
             else:
                 continue
 
