@@ -141,7 +141,7 @@ class TestSearch:
         assert len(results[0]["author"]) > 0
 
     def test_search_top_result_episode(self, yt):
-        results = yt.search('"110. Write It Well: How to Craft an Email to Capture Busy Readers" Stanford')
+        results = yt.search('"109. Simplify! How to Communicate Complex Ideas Simply and Effectively"')
         assert results[0]["category"] == "Top result"
         assert results[0]["resultType"] == "episode"
         assert results[0]["podcast"] == {
@@ -198,7 +198,7 @@ class TestSearch:
     def test_remove_search_suggestions_valid(self, yt_auth):
         first_pass = yt_auth.search("b")  # Populate the suggestion history
         assert len(first_pass) > 0, "Search returned no results"
-        time.sleep(10)
+        time.sleep(15)
         results = yt_auth.get_search_suggestions("b", detailed_runs=True)
         assert len(results) > 0, "No search suggestions returned"
         assert any(item.get("fromHistory") for item in results), "No suggestions from history found"
